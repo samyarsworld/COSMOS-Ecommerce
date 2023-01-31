@@ -1,0 +1,126 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+{% block body %}
+    <h2>Details for {{ listing }}</h2>
+    <h4>Listing price: ${{ listing.price.bid }}</h4>
+    <hr>
+    <div class="row">
+    
+    {% if user.is_authenticated and listing.is_active == False and user == listing.price.bid_owner%}
+        <div class="alert alert-success ml-3" role="alert">Congratulations! You bought this listing for {{ listing.price.bid }}.</div>
+    {% endif %}
+
+    {% if user.is_authenticated and user == listing.owner and listing.is_active == False and message != None %}
+        <div class="alert alert-success ml-3" role="alert">{{ message }}</div>
+    {% endif %}
+
+
+
+    {% if user.is_authenticated and listing.is_active %}
+        {% if watchlist %}
+        <form class="ml-3 mr-2" action="{% url 'remove_watchlist' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+            <input class="btn btn-danger" type="submit" value="Remove from watchlist"> 
+        </form>
+        {% else %}
+        <form class="ml-3 mr-2" action="{% url 'add_watchlist' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="listing_id" value="{{ listing.id }}">
+            <input class="btn btn-success" type="submit" value="Add to watchlist">
+        </form>
+        {% endif %}
+    {% if user == listing.owner %}
+    
+        <form class="mr-2" action="{% url 'remove_listing' listing.id %}" method="post">
+            {% csrf_token %}
+            <input class="btn btn-danger" type="submit" value="Remove listing">
+        </form>
+        {% if listing.price.bid > 1000 %}
+            <form action="{% url 'sell_listing' listing.id %}" method="post">
+                {% csrf_token %}
+                <input class="btn btn-info" type="submit" value="Sell listing">
+            </form>
+        {% endif %}
+    {% endif %}
+    {% endif %}
+
+</div>
+    
+    <br>
+
+    <img style="width: 400px;" src="{% static listing.image %}" alt="{{ listing.name }}">
+    <hr>
+    <h2>Description:</h2>
+    <p>{{ listing.description }}</p>
+    <hr>
+    <p>Listing owner: {{ listing.owner | title }}</p>
+    {% if not listing.is_active  %}
+    <b><p>{{ message }}</p></b>
+    {% endif %}
+    <hr>
+    
+
+    {% if user.is_authenticated %}
+        {% if listing.is_active and user != listing.owner %}
+            <h4><span class="badge badge-warning">Place bid:</span></h4>
+            <form action="{% url 'add_bid' %}" method="post">
+                {% csrf_token %}
+                <input min="0" type="number" name="bid">
+                <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                <input class="btn btn-success" type="submit" value="Bid!">
+            </form>
+            
+
+            {% if update != None %}
+            <br>
+                {% if update %}
+                    <div class="alert alert-success" role="alert">Bid was updated successfully!</div>
+                {% else %}
+                    <div class="alert alert-danger" role="alert">Bid failed! Try a higher value.</div>
+                {% endif %}
+            {% endif %}
+            <br><br>
+        {% endif %}
+
+    
+        {% if user.is_authenticated and user != listing.owner %}
+            <div class="row">
+                <div class="col">
+                    <form action="{% url 'add_comment' %}" method="post">
+                        {% csrf_token %}
+                        <label for="comment"><span style="font-size: 16px ;" class="badge badge-info">Place a comment:</span></label>
+                        <input style="width:50%" type="text" name="comment">
+                        <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                        <input class="btn btn-primary" type="submit" value="Add"> 
+                    </form>
+                </div> 
+            </div>
+            <hr>
+        {% endif %}
+        
+        
+
+        <h2>Comments</h2>
+
+        <br>
+
+        <div class="row mx-3">
+            <div class="col">
+                <ul class="list-group">
+                    {% for comment in comments %}
+                        <li class="list-group-item">
+                            <p>{{ comment.content }}</p>
+                            <small class="text-muted">Author: {{ comment.author | title  }}</small>
+                        </li>
+
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>     
+        
+    {% endif %}
+
+
+
+{% endblock %}

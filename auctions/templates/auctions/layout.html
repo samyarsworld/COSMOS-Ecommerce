@@ -1,0 +1,80 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Auctions{% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+        <style>
+            body {
+                background-color: #ebeff5;
+                font-family: 'Roboto', sans-serif;
+            }
+
+            h1, h2, h3, h4, h5 {
+                font-family: monaco,Consolas,Lucida Console,monospace;
+            }
+        </style>
+
+    </head>
+
+    <div class="container">
+    <body style="background-color: #e1b8ce;">  
+        <div class="row">
+            <div class="col-2">
+                <a href="{% url 'index' %}"><img style="height: 100px; width: 150px;" src="{% static 'waves.png' %}"></a>
+            </div>
+            <div class="col-10">
+                <div class="row">
+                    <div class="col">
+                        <h1>Cosmic Auctions</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <nav class="navbar navbar-expand-lg navbar-light" style="background-color: 	#5D3FD3;">
+                            <div style="display: flex;justify-content: space-between;">
+                                <ul class="navbar-nav mr-auto">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
+                                    </li>
+                                    {% if user.is_authenticated %}
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{% url 'create_listing' %}">Create Listing</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{% url 'watchlist' %}">Watchlists</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            {% if user.is_authenticated %}
+                                <strong class="mr-4" style="margin-left: auto;">Signed in as {{ user.username | title }}</strong>
+                            {% endif %}
+                        </nav>
+                    </div>
+                </div>       
+            </div>
+        </div>
+
+        <hr>
+            {% block body %}
+            {% endblock %}
+        </div>
+        
+    </body>
+</html>
